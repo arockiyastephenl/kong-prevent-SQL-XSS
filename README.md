@@ -1,50 +1,72 @@
-# Kong Plugin: JWT To Header (Route by JWT Claim)
-![alt text](https://github.com/yesinteractive/kong-jwt2header/blob/master/banner-jwt2header.png "Kong Jwt2header plugin")
+# Kong Plugin: Prevent SQL injuction and XSS Attack
+![alt text](https://github.com/arockiyastephenl/kong-prevent-SQL-XSS/blob/master/banner-jwt2header.png "Kong prvent SQL/XSS")
 
-Update: Previously this plugin only worked with Kong Enterprise but has been updated to support both Kong community and enterprise as it uses the Kong commmunity JWT libraries.
+The plugin you are describing is likely a security plugin that is designed to prevent SQL injection and cross-site scripting (XSS) attacks on a web application.
 
-This Kong Plugin can be used to route requests by JWT claim. It does this by converting JWT claims to headers during rewrite phase so 
-that Kong's route by header functionality can be used to route the request appropriately. Alternatively, the plugin can be used to 
-simply convert JWT claims to headers that can be consumed by the upstream service. 
+SQL injection is a type of attack where an attacker inserts malicious SQL code into a web application's input fields or parameters, which can then be executed by the application's database. This can allow the attacker to access sensitive information or manipulate the database in unintended ways.
 
-Please note that this plugin does NOT validate JWT tokens. You will still need to use the proper Kong auth plugin (JWT, OIDC, etc.) to do so. 
+Similarly, cross-site scripting (XSS) is a type of attack where an attacker injects malicious scripts into a web application, which are then executed by unsuspecting users who visit the affected page. This can allow the attacker to steal sensitive user data or perform actions on the user's behalf.
+
+To prevent these types of attacks, the security plugin you are describing likely intercepts incoming HTTP requests to the web application and scans the request body for any potentially malicious SQL code or scripts. If any such code or scripts are detected, the plugin will block the request and return a 400 bad request error, indicating that the request was malformed or contained malicious code.
+
+If no malicious code or scripts are detected, the plugin will allow the request to proceed to the upstream server, which will process the request and return a response. The security plugin will then inspect the response from the upstream server to ensure that it does not contain any malicious code or scripts before sending it back to the user.
+
+Overall, this plugin helps to ensure the security of a web application by detecting and blocking potential SQL injection and XSS attacks, which can help to prevent data breaches and other security incidents.
+
+## Blocking Keywords:
+
+```javascript
+local strings_to_match = {
+    "select",
+    "insert into",
+    "INSERT INTO",
+    "update set",
+    "UPDATE SET",
+    "delete from",
+    "DELETE FROM",
+    "drop table",
+    "DROP TABLE",
+    "union select",
+    "UNION SELECT",
+    "exec",
+    "EXEC",
+    "xp_cmdshell",
+    "XP_CMDSHELL",
+    "sp_configure",
+    "SP_CONFIGURE",
+    "sp_executesql",
+    "SP_EXECUTESQL",
+    "sp_",
+    "SP_",
+    "xp_",
+    "XP_",
+    "dbcc_",
+    "DBCC_",
+    "systables",
+    "SYSTABLES",
+    "syscolumns",
+    "SYSCOLUMNS",
+    "information_schema",
+    "INFORMATION_SCHEMA",
+    "master",
+    "MASTER",
+    "backup",
+    "BACKUP",
+    "restore",
+    "RESTORE"
+  }
+
+```
 
 ## Installation
 
 ### Manual
 
-1. To manually install plugin, create directory called `/usr/local/share/lua/5.1/kong/plugins/kong-jwt2header` on Kong node and copy contents of `/plugins` directory there.
-2. Update your KONG_PLUGINS environment variable or configuration to include `kong-jwt2header`
+1. To manually install plugin, create directory called `/usr/local/share/lua/5.1/kong/plugins/my-plugin` on Kong node and copy contents of `/plugins` directory there.
+2. Update your KONG_PLUGINS environment variable or configuration to include `my-plugin`
 3. Restart Kong and you're ready to go.
 
 If you are using Docker, a helpful script is included to help deploy the plugin to a Docker container and reload Kong with proper env variables.
 
-### luarocks
 
-Verify Git is installed on your Kong Node then install via luarocks:
-
-<pre>
-$ apk add --no-cache git
-$ luarocks install kong-jwt2header
-</pre>
-
-Once installed, besure to include `kong-jwt2header` in your KONG_PLUGINS environment variable and reload Kong. 
-
-
-## Configuration
-
-Since this plugin has elements that must run in the Rewrite execution phase, this plugin can only be configured to run globally in a kong workspace or cluster.
-
-<pre>
-$ curl -X POST http://kong:8001/plugins \
-    --data "name=kong-jwt2header" \
-    --data "config.strip_claims=false" \
-    --data "config.token_required=true"
-</pre>
-
-
-| Parameter     | Default     | Description  |  Required  |
-| ------------- |-------------|------------- |-------------| 
-| strip\_claims | false |  If enabled, claims will be removed from headers before being sent upstream. | yes
-| token\_required      | true     |   If enabled, an error will be returned if token is not present in request | yes
 

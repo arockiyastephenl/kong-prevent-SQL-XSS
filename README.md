@@ -1,6 +1,5 @@
 # Kong Plugin: Prevent SQL injuction and XSS Attack
-![alt text](https://github.com/arockiyastephenl/kong-prevent-SQL-XSS/blob/master/banner-jwt2header.png "Kong prvent SQL/XSS")
-
+ 
 The plugin you are describing is likely a security plugin that is designed to prevent SQL injection and cross-site scripting (XSS) attacks on a web application.
 
 SQL injection is a type of attack where an attacker inserts malicious SQL code into a web application's input fields or parameters, which can then be executed by the application's database. This can allow the attacker to access sensitive information or manipulate the database in unintended ways.
